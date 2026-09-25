@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jokerfrombali.github.io/malyar-sanur/sitemap.xml

@@ -1,0 +1,4 @@
+*.xlsx
+suggest_cache.json
+suggest_log.txt
+__pycache__/
