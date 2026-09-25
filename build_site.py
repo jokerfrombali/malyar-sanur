@@ -44,44 +44,103 @@ TXT = {
          ["Диагностика источника влаги", "Гидрофобизатор для камня и бетона", "Влагозащитные краски", "Обработка швов и примыканий"]),
 }
 
-def contact_html():
+IMG = {"S01": "roller", "S02": "facade", "S03": "ladder", "S04": "bali", "S05": "roller", "S06": "varnish",
+       "S07": "wood", "S08": "restore", "S09": "deck", "S10": "ladder", "S11": "hero", "S12": "facade"}
+ALT = {"hero": "Мастер красит наружную стену дома", "facade": "Покраска белого фасада здания", "ladder": "Мастер на стремянке у фасада",
+       "restore": "Мастер работает с деревом", "bali": "Строитель на объекте на Бали", "wood": "Балийский мастер работает с деревом",
+       "roller": "Валик с краской на стене", "varnish": "Покрытие деревянной доски кистью", "villa": "Вилла с бассейном на Бали",
+       "deck": "Деревянная терраса после дождя"}
+WA_SVG = '<svg class="wa-ico" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.8-.2 1.3z"/></svg>'
+
+def contact_html(small=False):
+    sm = " btn-sm" if small else ""
     parts = []
     if CFG["whatsapp"]:
-        parts.append(f'<a class="btn" href="https://wa.me/{re.sub(r"[^0-9]", "", CFG["whatsapp"])}">WhatsApp</a>')
+        parts.append(f'<a class="btn btn-wa{sm}" href="https://wa.me/{re.sub(r"[^0-9]", "", CFG["whatsapp"])}">{WA_SVG}WhatsApp</a>')
     if CFG["telegram"]:
-        parts.append(f'<a class="btn alt" href="https://t.me/{CFG["telegram"].lstrip("@")}">Telegram</a>')
+        parts.append(f'<a class="btn btn-ghost{sm}" href="https://t.me/{CFG["telegram"].lstrip("@")}">Telegram</a>')
     if CFG["phone"]:
-        parts.append(f'<a class="btn alt" href="tel:{re.sub(r"[^0-9+]", "", CFG["phone"])}">Позвонить</a>')
-    return " ".join(parts) or '<a class="btn" href="%s/kontakty/">Связаться</a>' % B
+        parts.append(f'<a class="btn btn-ghost{sm}" href="tel:{re.sub(r"[^0-9+]", "", CFG["phone"])}">Позвонить</a>')
+    return " ".join(parts) or f'<a class="btn btn-wa{sm}" href="{B}/kontakty/">{WA_SVG}Написать мастеру</a>'
 
-CSS = """:root{--bg:#fbfaf7;--fg:#1d2327;--mut:#5b6670;--acc:#0f6e6e;--acc2:#e9f3f2;--card:#fff;--bd:#e3e1dc}
-@media (prefers-color-scheme:dark){:root{--bg:#141719;--fg:#e8eaeb;--mut:#a3adb5;--acc:#5cc2bb;--acc2:#1d2a2a;--card:#1b1f22;--bd:#2c3236}}
-*{box-sizing:border-box}body{margin:0;font:17px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--fg)}
-a{color:var(--acc)}header,main,footer{max-width:960px;margin:0 auto;padding:0 16px}
-header{display:flex;justify-content:space-between;align-items:center;padding-top:14px;padding-bottom:14px;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:8px}
-header .logo{font-weight:700;text-decoration:none;color:var(--fg)}nav a{margin-left:14px;text-decoration:none;font-size:15px}
-h1{font-size:clamp(26px,5vw,38px);line-height:1.2;margin:28px 0 12px}h2{margin-top:32px}
-.lead{font-size:19px;color:var(--mut)}.btn{display:inline-block;background:var(--acc);color:#fff;padding:11px 18px;border-radius:8px;text-decoration:none;font-weight:600;margin:4px 6px 4px 0}
-.btn.alt{background:var(--acc2);color:var(--acc)}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:16px}.card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--mut);font-size:15px}
-.card a{text-decoration:none}ol,ul{padding-left:22px}details{border-bottom:1px solid var(--bd);padding:10px 0}summary{cursor:pointer;font-weight:600}
-.crumbs{font-size:14px;color:var(--mut);margin-top:16px}.cta{background:var(--acc2);border-radius:12px;padding:20px;margin:36px 0}
-footer{border-top:1px solid var(--bd);margin-top:48px;padding-top:18px;padding-bottom:40px;color:var(--mut);font-size:14px}
-.sticky{position:fixed;right:16px;bottom:16px}"""
+def img(name, cls="", eager=False):
+    load = 'fetchpriority="high"' if eager else 'loading="lazy"'
+    return f'<img class="{cls}" src="{B}/img/{name}.webp" alt="{E(ALT[name])}" {load} decoding="async">'
 
-def page(path, title, desc, body, crumbs=None, schema=None):
+CSS = """:root{--bg:#FBF8F3;--surface:#fff;--ink:#1B2B27;--muted:#5B6B66;--line:#E8E2D8;--brand:#1F5E4F;--brand-2:#E9F2EE;--accent:#F2A65A;--accent-2:#FCEBD8;--wa:#25D366;--radius:20px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.15;letter-spacing:-.01em;margin:0 0 .5em}
+h1{font-size:clamp(2.1rem,5vw,3.5rem)}h2{font-size:clamp(1.6rem,3vw,2.3rem)}h3{font-size:1.2rem}
+a{color:var(--brand)}p{margin:0 0 1em}img{max-width:100%;display:block}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:20;background:rgba(251,248,243,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.logo{font-family:Fraunces,serif;font-weight:600;font-size:1.3rem;color:var(--ink);text-decoration:none}.logo span{color:var(--accent)}
+.links{display:flex;gap:26px}.links a{color:var(--muted);text-decoration:none;font-size:.95rem}.links a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:999px;font-weight:600;text-decoration:none;font-size:1rem;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}.btn-wa{background:var(--wa);color:#fff;box-shadow:0 6px 20px rgba(37,211,102,.3)}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}.btn-sm{padding:9px 16px;font-size:.9rem}
+.wa-ico{width:20px;height:20px;fill:currentColor;flex:none}
+.hero{padding-top:56px;padding-bottom:48px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.eyebrow{display:inline-block;background:var(--brand-2);color:var(--brand);padding:6px 14px;border-radius:999px;font-size:.85rem;font-weight:600;margin-bottom:18px}
+.lead{font-size:1.18rem;color:var(--muted);max-width:34em}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 20px}
+.trust{display:flex;gap:10px 22px;flex-wrap:wrap;color:var(--muted);font-size:.92rem;list-style:none;padding:0;margin:0}
+.trust li::before{content:"✓ ";color:var(--brand);font-weight:700}
+.photo{position:relative;border-radius:28px;overflow:hidden;aspect-ratio:4/5;background:var(--accent-2)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.chip{position:absolute;left:18px;bottom:18px;background:#fff;border-radius:14px;padding:12px 16px;box-shadow:0 10px 30px rgba(0,0,0,.1);font-size:.9rem;max-width:80%}
+.chip b{display:block;font-family:Fraunces,serif;font-size:1.05rem}
+section{padding:60px 0}.alt-bg{background:var(--surface);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec-head{max-width:660px;margin-bottom:34px}.sec-head p{color:var(--muted)}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:border-color .15s,box-shadow .15s,transform .15s}
+a.card:hover{border-color:#cfd9d4;box-shadow:0 12px 30px rgba(27,43,39,.08);transform:translateY(-2px)}
+.card img{aspect-ratio:16/10;object-fit:cover;width:100%}.card .body{padding:18px 20px 22px}
+.card h3{margin-bottom:6px}.card p{color:var(--muted);font-size:.95rem;margin:0}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.split .photo{aspect-ratio:4/3}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:0;list-style:none}
+.steps li{counter-increment:s;background:var(--surface);border-radius:var(--radius);padding:24px;border:1px solid var(--line)}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--accent-2);color:#b0632a;font-weight:700;margin-bottom:12px}
+.steps b{display:block;margin-bottom:4px}
+.area{display:flex;flex-wrap:wrap;gap:10px;padding:0;list-style:none}.area li{background:var(--brand-2);color:var(--brand);border-radius:999px;padding:8px 16px;font-weight:600;font-size:.92rem}
+.checks{list-style:none;padding:0;display:grid;gap:10px}.checks li{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.checks li::before{content:"✓";color:var(--brand);font-weight:700;margin-right:10px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:10px}summary{cursor:pointer;font-weight:600}
+details p{margin:.6em 0 0;color:var(--muted)}
+.crumbs{font-size:.88rem;color:var(--muted);padding-top:20px}.crumbs a{color:var(--muted)}
+.band{background:var(--brand);color:#fff;border-radius:28px;padding:44px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:center}
+.band h2{color:#fff}.band p{color:#d5e6df;margin:0}.band .cta-row{margin:0;justify-content:flex-end}
+.page-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding-top:28px;padding-bottom:20px}.page-hero .photo{aspect-ratio:4/3}
+.credit{font-size:.78rem;color:var(--muted);margin-top:8px}
+footer{border-top:1px solid var(--line);padding:36px 0 90px;color:var(--muted);font-size:.9rem}
+.float{position:fixed;right:16px;bottom:16px;z-index:30}
+@media (max-width:860px){.hero,.split,.page-hero,.band{grid-template-columns:1fr}.hero{padding-top:28px}.links{display:none}
+.steps{grid-template-columns:1fr 1fr}.band{padding:30px}.band .cta-row{justify-content:flex-start}.photo{aspect-ratio:4/3}}
+@media (max-width:520px){.steps{grid-template-columns:1fr}body{font-size:16px}}"""
+
+def page(path, title, desc, body, crumbs=None, schema=None, og=None):
     canon = CFG["site_url"].rstrip("/") + path
     cr = ""
     if crumbs:
-        cr = '<div class="crumbs">' + " › ".join(f'<a href="{B}{u}">{E(t)}</a>' if u else E(t) for t, u in crumbs) + "</div>"
+        cr = '<div class="wrap crumbs">' + " › ".join(f'<a href="{B}{u}">{E(t)}</a>' if u else E(t) for t, u in crumbs) + "</div>"
     sch = "".join(f'<script type="application/ld+json">{json.dumps(x, ensure_ascii=False)}</script>' for x in (schema or []))
+    ogi = f'<meta property="og:image" content="{CFG["site_url"]}/img/{og or "hero"}.webp">'
     doc = f"""<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{canon}">
+<meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}">{ogi}<meta name="theme-color" content="#FBF8F3">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{B}/style.css">{sch}</head><body>
-<header><a class="logo" href="{B}/">{E(CFG["name"])}</a><nav><a href="{B}/uslugi/">Услуги</a><a href="{B}/ceny/">Цены</a><a href="{B}/raboty/">Работы</a><a href="{B}/kontakty/">Контакты</a></nav></header>
+<header><div class="wrap nav"><a class="logo" href="{B}/">Маляр<span>·</span>Санур</a>
+<nav class="links"><a href="{B}/uslugi/">Услуги</a><a href="{B}/ceny/">Цены</a><a href="{B}/raboty/">Работы</a><a href="{B}/kontakty/">Контакты</a></nav>
+{contact_html(True).split("</a>")[0] + "</a>"}</div></header>
 <main>{cr}{body}</main>
-<footer>{E(CFG["name"])} — малярные работы, удаление плесени и покрытие дерева в Сануре, Бали.</footer>
-<div class="sticky">{contact_html().split(" ")[0] if (CFG["whatsapp"] or CFG["telegram"]) else ""}</div></body></html>"""
+<footer><div class="wrap">{E(CFG["name"])} — покраска, удаление плесени и покрытие дерева в Сануре, Бали.<br>
+Фотографии на сайте — иллюстрации (Pexels, Unsplash), не работы мастера. Фото объектов появятся в разделе «Работы».</div></footer>
+</body></html>"""
     d = os.path.join(OUT, path.strip("/"))
     os.makedirs(d, exist_ok=True)
     open(os.path.join(d, "index.html"), "w", encoding="utf-8").write(doc)
@@ -95,7 +154,7 @@ def faq_for(pid, n=5):
     return qs[:n]
 
 biz = {"@context": "https://schema.org", "@type": "HousePainter", "name": CFG["name"], "url": CFG["site_url"] + "/",
-       "areaServed": {"@type": "Place", "name": "Sanur, Bali, Indonesia"}}
+       "image": CFG["site_url"] + "/img/hero.webp", "areaServed": {"@type": "Place", "name": "Sanur, Bali, Indonesia"}}
 if CFG["phone"]:
     biz["telephone"] = CFG["phone"]
 if CFG["gbp_url"]:
@@ -103,50 +162,96 @@ if CFG["gbp_url"]:
 
 if os.path.exists(OUT):
     shutil.rmtree(OUT)
-os.makedirs(OUT)
+os.makedirs(os.path.join(OUT, "img"))
+for f in os.listdir(os.path.join(ROOT, "img_src")):
+    if f.endswith(".webp"):
+        shutil.copy(os.path.join(ROOT, "img_src", f), os.path.join(OUT, "img", f))
 open(os.path.join(OUT, "style.css"), "w", encoding="utf-8").write(CSS)
 open(os.path.join(OUT, ".nojekyll"), "w").write("")
 urls = []
 svcs = [p for p in pages.values() if p["type"] == "услуга"]
 
-def svc_cards():
+def short(t, n=110):
+    return t if len(t) <= n else t[:n].rsplit(" ", 1)[0] + "…"
+
+def svc_cards(items=None):
     return '<div class="grid">' + "".join(
-        f'<div class="card"><a href="{B}{p["url"]}"><h3>{E(p["h1"])}</h3></a><p>{E(TXT[p["id"]][0][:120])}…</p></div>' for p in svcs) + "</div>"
+        f'<a class="card" href="{B}{p["url"]}">{img(IMG[p["id"]])}<div class="body"><h3>{E(p["h1"].replace(" в Сануре", ""))}</h3><p>{E(short(TXT[p["id"]][0]))}</p></div></a>'
+        for p in (items or svcs)) + "</div>"
+
+AREA = ["Санур Кайя", "Санур Кауф", "Семаванг", "Синду", "Мертасари", "Батуджимбар"]
+STEPS = [("Фото в WhatsApp", "Пришлите фото и примерную площадь."), ("Осмотр в Сануре", "Приезжаю, смотрю основание и влажность."),
+         ("Смета", "Объём, материалы, сроки — до начала работ."), ("Работа и уборка", "Делаю, убираю, показываю результат.")]
 
 home = pages["P000"]
 urls.append(page("/", home["title"], home["desc"], f"""
-<h1>{E(home["h1"])}</h1>
-<p class="lead">Покраска стен и фасадов вилл, удаление плесени, покрытие дерева лаком и маслом. Работаю только в Сануре — быстро приезжаю на осмотр и знаю, как влажность и морской воздух влияют на покрытия.</p>
-<p>{contact_html()}</p><p>Пришлите фото и примерную площадь — оценю объём работ и стоимость.</p>
-<h2>Услуги</h2>{svc_cards()}
+<div class="wrap hero"><div>
+<span class="eyebrow">Только Санур · выезд на осмотр</span>
+<h1>Маляр в Сануре: покраска, плесень, лак для дерева</h1>
+<p class="lead">Крашу стены и фасады вилл, убираю плесень и защищаю дерево лаком и маслом. Знаю, как влажность и морской воздух Санура разрушают покрытия, поэтому начинаю с причины, а не с закрашивания.</p>
+<div class="cta-row">{contact_html()}<a class="btn btn-ghost" href="{B}/uslugi/">Все услуги</a></div>
+<ul class="trust"><li>Расчёт по фото</li><li>Материалы под влажный климат</li><li>Уборка после работы</li></ul>
+</div><div class="photo">{img("hero", eager=True)}<div class="chip"><b>Санур, Бали</b>Покраска · плесень · дерево</div></div></div>
+
+<section class="alt-bg"><div class="wrap"><div class="sec-head"><h2>Услуги</h2><p>От подкраски одной стены до фасада виллы и террасы у бассейна.</p></div>
+{svc_cards()}</div></section>
+
+<section><div class="wrap split"><div class="photo">{img("facade")}</div><div>
 <h2>Почему у моря покрытия служат меньше</h2>
-<p>В Сануре дома стоят рядом с океаном: соль в воздухе ускоряет коррозию металла, солнце разрушает лак на уличном дереве, а высокая влажность и сезон дождей дают плесень на стенах и потолках. Поэтому я начинаю с диагностики причины, а не с закрашивания следствий.</p>
-<h2>Район работы</h2><p>Санур: Санур Кайя, Санур Кауф, Семаванг, Синду, Мертасари, Батуджимбар.</p>
+<p>Санур стоит на побережье: соль в воздухе ускоряет коррозию металла, солнце разрушает лак на уличном дереве, а влажность и сезон дождей дают плесень на стенах и потолках.</p>
+<ul class="checks"><li>Проверяю влажность стены до покраски</li><li>Обрабатываю плесень, а не закрашиваю её</li><li>Подбираю краски и лаки под прибрежный климат</li><li>Планирую фасады на сухой сезон</li></ul>
+</div></div></section>
+
+<section class="alt-bg"><div class="wrap"><div class="sec-head"><h2>Как проходит работа</h2></div>
+<ol class="steps">{"".join(f"<li><b>{E(a)}</b>{E(b)}</li>" for a, b in STEPS)}</ol></div></section>
+
+<section><div class="wrap split"><div>
+<h2>Дерево: лак, масло, реставрация</h2>
+<p>Тик, двери, мебель, террасы у бассейна. Во влажном воздухе лак мутнеет и отслаивается при ошибках подготовки — работаю по погоде, с шлифовкой между слоями.</p>
+<div class="cta-row"><a class="btn btn-ghost" href="{B}/uslugi/lakirovka-dereva/">Покрытие лаком</a><a class="btn btn-ghost" href="{B}/uslugi/terrasa-dekking/">Терраса</a></div>
+</div><div class="photo">{img("wood")}</div></div></section>
+
+<section class="alt-bg"><div class="wrap"><div class="sec-head"><h2>Где работаю</h2><p>Только Санур — поэтому быстро приезжаю на осмотр и на гарантийные вопросы.</p></div>
+<ul class="area">{"".join(f"<li>{a}</li>" for a in AREA)}</ul></div></section>
+
+<section><div class="wrap band"><div><h2>Пришлите фото — оценю работу</h2><p>Фото поверхности и примерная площадь. Отвечу, что нужно сделать и сколько это стоит.</p></div>
+<div class="cta-row">{contact_html()}</div></div></section>
 """, schema=[biz]))
+
 urls.append(page("/uslugi/", "Услуги маляра в Сануре", "Все малярные услуги в Сануре: покраска, плесень, лак и масло для дерева, металл.",
-                 f"<h1>Услуги маляра в Сануре</h1>{svc_cards()}", crumbs=[("Главная", "/"), ("Услуги", "")]))
+                 f'<section><div class="wrap"><div class="sec-head"><h1>Услуги маляра в Сануре</h1><p class="lead">Выберите работу — на странице услуги этапы, материалы и частые вопросы.</p></div>{svc_cards()}</div></section>',
+                 crumbs=[("Главная", "/"), ("Услуги", "")]))
 for p in svcs:
     intro, steps = TXT[p["id"]]
     faq = faq_for(p["id"])
-    faq_html = ("<h2>Частые вопросы</h2>" + "".join(f"<details><summary>{E(q[0].upper() + q[1:])}?</summary><p>Ответ зависит от состояния поверхности — пришлите фото, и я подскажу, что нужно именно в вашем случае.</p></details>" for q in faq)) if faq else ""
-    svc_schema = {"@context": "https://schema.org", "@type": "Service", "name": p["h1"], "areaServed": "Sanur, Bali", "provider": {"@type": "HousePainter", "name": CFG["name"]}}
+    faq_html = ('<section class="alt-bg"><div class="wrap"><div class="sec-head"><h2>Частые вопросы</h2></div>' + "".join(
+        f"<details><summary>{E(q[0].upper() + q[1:])}?</summary><p>Зависит от состояния поверхности и материала. Пришлите фото — подскажу, что нужно именно в вашем случае.</p></details>"
+        for q in faq) + "</div></section>") if faq else ""
+    svc_schema = {"@context": "https://schema.org", "@type": "Service", "name": p["h1"], "areaServed": "Sanur, Bali",
+                  "provider": {"@type": "HousePainter", "name": CFG["name"]}}
     crumbs_schema = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Главная", "item": CFG["site_url"] + "/"},
         {"@type": "ListItem", "position": 2, "name": "Услуги", "item": CFG["site_url"] + "/uslugi/"},
         {"@type": "ListItem", "position": 3, "name": p["h1"]}]}
+    others = [o for o in svcs if o["id"] != p["id"]][:3]
     urls.append(page(p["url"], p["title"], p["desc"], f"""
-<h1>{E(p["h1"])}</h1><p class="lead">{E(intro)}</p><p>{contact_html()}</p>
-<h2>Что входит в работу</h2><ol>{"".join(f"<li>{E(s)}</li>" for s in steps)}</ol>
-<h2>Стоимость</h2><p>Цена зависит от площади, состояния поверхности и материалов. Точную смету даю после фото или осмотра — выезд в пределах Санура.</p>
+<div class="wrap page-hero"><div><span class="eyebrow">Санур · расчёт по фото</span><h1>{E(p["h1"])}</h1><p class="lead">{E(intro)}</p>
+<div class="cta-row">{contact_html()}</div></div><div class="photo">{img(IMG[p["id"]], eager=True)}</div></div>
+<section><div class="wrap split"><div><h2>Что входит в работу</h2><ol class="steps" style="grid-template-columns:1fr">{"".join(f"<li>{E(s)}</li>" for s in steps)}</ol></div>
+<div><h2>Стоимость</h2><p>Цена зависит от площади, состояния поверхности и материалов. Точную смету даю после фото или осмотра — выезд в пределах Санура.</p>
+<ul class="checks"><li>Смета до начала работ</li><li>Материалы под влажный климат</li><li>Уборка после работы</li></ul></div></div></section>
 {faq_html}
-<div class="cta"><strong>Нужна оценка?</strong><p>Пришлите фото поверхности и примерную площадь.</p>{contact_html()}</div>
-<h2>Другие услуги</h2><ul>{"".join(f'<li><a href="{B}{o["url"]}">{E(o["h1"])}</a></li>' for o in svcs if o["id"] != p["id"])}</ul>
-""", crumbs=[("Главная", "/"), ("Услуги", "/uslugi/"), (p["h1"], "")], schema=[svc_schema, crumbs_schema]))
-for pid, body in [("P090", "<p>Цены формируются по смете: площадь, подготовка (очистка, обработка от плесени, шпаклёвка), материалы и доступ (высота, леса). Пришлите фото — пришлю расчёт.</p>"),
-                  ("P091", "<p>Раздел наполняется фотографиями реальных объектов в Сануре: до и после.</p>"),
-                  ("P092", "<p>Район работы: Санур. Напишите — отвечу и договоримся об осмотре.</p>")]:
+<section><div class="wrap band"><div><h2>Нужна оценка?</h2><p>Пришлите фото поверхности и примерную площадь.</p></div><div class="cta-row">{contact_html()}</div></div></section>
+<section><div class="wrap"><div class="sec-head"><h2>Другие услуги</h2></div>{svc_cards(others)}</div></section>
+""", crumbs=[("Главная", "/"), ("Услуги", "/uslugi/"), (p["h1"], "")], schema=[svc_schema, crumbs_schema], og=IMG[p["id"]]))
+
+for pid, body, pic in [("P090", "<p class=\"lead\">Цена складывается из площади, подготовки (очистка, обработка от плесени, шпаклёвка), материалов и доступа (высота, леса). Пришлите фото — пришлю расчёт.</p>", "roller"),
+                       ("P091", "<p class=\"lead\">Здесь появятся фотографии реальных объектов в Сануре: до и после.</p>", "villa"),
+                       ("P092", "<p class=\"lead\">Работаю только в Сануре. Напишите — отвечу и договоримся об осмотре.</p>", "bali")]:
     p = pages[pid]
-    urls.append(page(p["url"], p["title"], p["desc"], f"<h1>{E(p['h1'])}</h1>{body}<p>{contact_html()}</p>", crumbs=[("Главная", "/"), (p["h1"], "")]))
+    urls.append(page(p["url"], p["title"], p["desc"],
+                     f'<div class="wrap page-hero"><div><h1>{E(p["h1"])}</h1>{body}<div class="cta-row">{contact_html()}</div></div><div class="photo">{img(pic, eager=True)}</div></div>',
+                     crumbs=[("Главная", "/"), (p["h1"], "")], og=pic))
 
 open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8").write(
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +

@@ -1,11 +1,1 @@
-{
-  "version": "0.0.1",
-  "configurations": [
-    {
-      "name": "nanny-site",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8791", "--directory", "D:\\Няня\\site"],
-      "port": 8791
-    }
-  ]
-}
+{"version":"0.0.1","configurations":[{"name":"site","runtimeExecutable":"python","runtimeArgs":["-m","http.server","8843","--directory","C:/Users/anich/AppData/Local/Temp/claude/D-------/2c5f7429-0b96-4772-82c0-d1e8c554f745/scratchpad/serve"],"port":8843}]}
